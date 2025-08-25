@@ -23,9 +23,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Debug files
-      run: ls -R
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
@@ -35,3 +32,6 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/frontend-projet-eni:latest
           ${{ secrets.DOCKER_USERNAME }}/frontend-projet-eni:${{ github.sha }}
+
+    - name: Debug files
+      run: ls -R
