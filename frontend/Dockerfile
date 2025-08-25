@@ -2,7 +2,7 @@ FROM node:20-alpine as build
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
 COPY . .
