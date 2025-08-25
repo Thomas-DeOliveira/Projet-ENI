@@ -1,10 +1,10 @@
-name: Build Frontend Docker Image
+name: Build Backend Docker Image
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - 'frontend/**'
+      - 'backend/**'
 
 jobs:
   build-and-push:
@@ -28,7 +28,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend-projet-eni:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/backend-projet-eni:latest
