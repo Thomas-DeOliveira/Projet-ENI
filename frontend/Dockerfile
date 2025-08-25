@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
-ENV NODE_OPTIONS=--max-old-space-size=2048
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps
 
 RUN npm install
 
