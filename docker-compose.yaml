@@ -17,6 +17,13 @@ services:
 
     backend:
         image: thomasdeo/backend-projet-eni:latest
+        environment:
+            - DB_HOST=database
+            - DB_USER=root
+            - DB_PASSWORD=
+            - DB_NAME=todolist_db
+            - DB_DIALECT=mysql
+            - PORT=3000
         ports:
             - "3000:3000"
 

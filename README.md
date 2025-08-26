@@ -202,7 +202,7 @@ jobs:
 ```
 Les tests unitaires sont configurés pour continuer même en cas d'échec (`continue-on-error: true`) afin de ne pas bloquer le processus de build et de déploiement. Car l'application doit être déployée même si certains tests échouent.
 
-Le dockerfile du frontend a été modifié pour la production en ajoutant des paramètres pour build en mode production. Et le serveur de développement `ng serve` a été remplacé par un serveur Nginx.
+Le dockerfile du frontend a été modifié pour la production en ajoutant des paramètres pour build en mode production. Et le serveur de développement `ng serve` a été remplacé par un serveur Nginx sur le port 80.
 ```Dockerfile
 FROM node:24 as build
 
