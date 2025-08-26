@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
 
       - name: Run tests
-        working-directory: ./frontend
+        working-directory: ./backend
         continue-on-error: true
         run: |
           npm install
