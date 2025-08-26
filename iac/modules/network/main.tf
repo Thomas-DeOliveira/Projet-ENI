@@ -12,3 +12,34 @@ resource "azurerm_subnet" "aks" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.subnet_address_prefix
 }
+
+# Sous-réseau dédié pour MySQL Flexible Server
+resource "azurerm_subnet" "mysql" {
+  name                 = var.mysql_subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = var.mysql_subnet_address_prefix
+  delegation {
+    name = "mysql-delegation"
+    service_delegation {
+      name    = "Microsoft.DBforMySQL/flexibleServers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+}
+
+# Zone DNS privée pour MySQL
+resource "azurerm_private_dns_zone" "mysql" {
+  name                = "mysql-private-dns-zone.mysql.database.azure.com"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+# Lien entre la zone DNS privée et le VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "mysql" {
+  name                  = "mysql-dns-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name  = azurerm_private_dns_zone.mysql.name
+  virtual_network_id     = azurerm_virtual_network.vnet.id
+  tags                  = var.tags
+}

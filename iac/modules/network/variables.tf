@@ -26,6 +26,18 @@ variable "subnet_name" {
   default     = "aks-subnet"
 }
 
+variable "mysql_subnet_name" {
+  description = "Nom du sous-réseau pour MySQL Flexible Server"
+  type        = string
+  default     = "mysql-subnet"
+}
+
+variable "mysql_subnet_address_prefix" {
+  description = "Plage d'adresses du sous-réseau MySQL"
+  type        = list(string)
+  default     = ["10.1.1.0/24"]
+}
+
 variable "subnet_address_prefix" {
   description = "Plage d'adresses du sous-réseau"
   type        = list(string)
