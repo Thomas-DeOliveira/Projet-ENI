@@ -1,7 +1,7 @@
 module.exports = {
   HOST: 'mysql-projet-eni.mysql.database.azure.com',
   USER: 'adminmysql',
-  PASSWORD: '',
+  PASSWORD: process.env.DB_PASSWORD,
   DB: 'todolist_db',
   dialect: 'mysql',
   pool: {
