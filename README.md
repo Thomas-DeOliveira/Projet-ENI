@@ -358,72 +358,60 @@ kubectl --namespace monitoring get secrets monitoring-grafana -o jsonpath="{.dat
 ```
 ```mermaid
 graph LR
-  %% Direction
-  %% LR = gauche -> droite
-  %% TB = haut -> bas
-  %% On reste en LR pour compacité
-  %% ----------------------------------------------------------------
-  subgraph User[Utilisateurs]
-    U1[👤 Navigateur Web]
+  subgraph User [Users]
+    U1[Web Browser]
   end
 
-  subgraph Azure[Azure]
-    subgraph RG[Resource Group]
-      subgraph AKS[AKS - Azure Kubernetes Service]
-        subgraph Ingress[Ingress NGINX]
-          IGW[🌐 Ingress Controller]
+  subgraph Azure [Azure]
+    subgraph RG [Resource Group]
+      subgraph AKS [AKS - Azure Kubernetes Service]
+        subgraph Ingress [Ingress NGINX]
+          IGW[Ingress Controller]
         end
 
-        subgraph NSApp[Namespace: app]
-          FE[Deployment: frontend\nNginx -> Angular]
+        subgraph NSApp [Namespace: app]
+          FE[Deployment: frontend\nNginx serving Angular]
           BE[Deployment: backend\nNode.js + Express + Sequelize]
-          SVC_FE[Service: frontend (ClusterIP)]
-          SVC_BE[Service: backend (ClusterIP)]
+          SVC_FE[Service frontend (ClusterIP)]
+          SVC_BE[Service backend (ClusterIP)]
           IGW -->|HTTP/HTTPS| SVC_FE
           IGW -->|/api| SVC_BE
           SVC_FE --> FE
           SVC_BE --> BE
         end
 
-        subgraph NSCSI[Namespace: csi/kv]
+        subgraph NSCSI [Namespace: csi-kv]
           SPClass[SecretProviderClass]
-          VolMount[Volume CSI (Key Vault)]
+          VolMount[CSI volume from Key Vault]
         end
 
-        BE -. monte .-> VolMount
-        VolMount -. fournit .-> BE
+        BE -. mounts .- VolMount
+        VolMount -. provides .- BE
       end
 
-      subgraph DB[AAD + Réseau + Base de Données]
-        MySQL[Azure Database for MySQL\n(Flexible Server)]
-        VNet[VNet/Subnet]
+      subgraph DB [Database & Network]
+        MySQL[Azure Database for MySQL\nFlexible Server]
+        VNet[Virtual Network/Subnet]
       end
 
-      subgraph MON[Monitoring]
+      subgraph MON [Monitoring]
         PROM[Prometheus]
         GRAF[Grafana]
       end
 
-      KV[(Azure Key Vault)]
+      KV[Azure Key Vault]
     end
   end
 
-  %% Flux utilisateur
   U1 -->|HTTPS| IGW
-
-  %% Connexions backend
   BE -->|TCP 3306| MySQL
-  BE -. Secrets (DB pwd) .-> KV
+  BE -. reads secrets .- KV
+  KV -->|secrets| SPClass
 
-  %% CSI
-  KV -->|Secrets| SPClass
-
-  %% Monitoring
-  FE -. metrics/logs .-> PROM
-  BE -. metrics/logs .-> PROM
+  FE -. metrics/logs .- PROM
+  BE -. metrics/logs .- PROM
   PROM --> GRAF
 
-  %% Liaisons réseau
   AKS --- VNet
   MySQL --- VNet
 ```
