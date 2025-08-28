@@ -356,7 +356,7 @@ A la fin du déploiement, afin de récupérer le mot de passe admin de Grafana, 
 ```shell
 kubectl --namespace monitoring get secrets monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
-
+```mermaid
 graph LR
 %% Direction
 %% LR = gauche -> droite
@@ -426,3 +426,4 @@ PROM --> GRAF
 %% Liaisons réseau
 AKS --- VNet
 MySQL --- VNet
+```
