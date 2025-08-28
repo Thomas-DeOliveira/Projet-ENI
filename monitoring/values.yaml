@@ -28,24 +28,12 @@ prometheus:
 # ---------------------------------------
 grafana:
   adminUser: "admin"
-  adminPasswordExistingSecret: "grafana-admin"
   service:
     type: ClusterIP
   grafana.ini:
     server:
       root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
       serve_from_sub_path: true
-  extraVolumeMounts:
-    - name: grafana-secrets
-      mountPath: /mnt/secrets-store
-      readOnly: true
-  extraVolumes:
-    - name: grafana-secrets
-      csi:
-        driver: secrets-store.csi.k8s.io
-        readOnly: true
-        volumeAttributes:
-          secretProviderClass: azure-kv-grafana
   ingress:
     enabled: true
     ingressClassName: nginx
