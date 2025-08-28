@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "rg" {
-  name = "rg-TDeOliveira2024_cours-projet"
+  name = "rg-projet-eni"
 }
 
 data "azurerm_client_config" "current" {}
@@ -29,6 +29,7 @@ module "keyvault" {
   location              = data.azurerm_resource_group.rg.location
   tenant_id             = data.azurerm_client_config.current.tenant_id
   object_id             = data.azurerm_client_config.current.object_id
+  aks_mi_principal_id = module.aks.aks_mi_principal_id
   tags = {
     user = "TDeOliveira2024"
   }

@@ -6,6 +6,21 @@ resource "azurerm_key_vault" "kv" {
   tenant_id                   = var.tenant_id
   sku_name                    = "standard"
 
+  # Access policy pour la MI
+  access_policy {
+    tenant_id = var.tenant_id
+    object_id = var.aks_mi_principal_id
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Purge"
+    ]
+  }
+
   access_policy {
     tenant_id = var.tenant_id
     object_id = var.object_id
@@ -14,6 +29,4 @@ resource "azurerm_key_vault" "kv" {
       "Get", "List", "Set", "Delete", "Recover", "Purge"
     ]
   }
-
-  tags = var.tags
 }

@@ -254,3 +254,94 @@ services:
 volumes:
     db_data:
 ```
+
+## Déploiement de du cluster AKS avec Terraform
+
+Afin d'organiser le déploiement de l'infrastructure, j'ai organiser les ressources dans des modules.
+
+Les fichiers de déploiement pour d'AKS sont dans le dossier AKSn le fichier main.tf est le suivant : 
+```hcl
+resource "azurerm_kubernetes_cluster" "k8s" {
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  name                = var.cluster_name
+  dns_prefix          = var.dns_prefix
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  default_node_pool {
+    name       = "default"
+    vm_size    = "Standard_B2S"
+    node_count = 2
+    vnet_subnet_id = var.subnet_id
+  }
+
+  network_profile {
+    network_plugin = "azure"  # Utilisation d'Azure CNI
+    network_policy = "calico"
+    service_cidr   = "10.0.0.0/16"
+    dns_service_ip = "10.0.0.10"
+  }
+
+  tags = var.tags
+}
+```
+Les variables sont définies dans le fichier variables.tf :
+```hcl
+variable "resource_group_name" {
+  description = "Nom du groupe de ressources"
+  type        = string
+}
+
+variable "location" {
+  description = "Région Azure"
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "Nom du cluster AKS"
+  type        = string
+  default     = "aks-projet-eni"
+}
+
+variable "dns_prefix" {
+  description = "Préfixe DNS pour le cluster AKS"
+  type        = string
+  default     = "aks-projet-eni"
+}
+
+variable "subnet_id" {
+  description = "ID du sous-réseau pour AKS"
+  type        = string
+}
+
+variable "tags" {
+  description = "Tags à appliquer aux ressources"
+  type        = map(string)
+  default     = {}
+}
+```
+Afin d'isoler le cluster AKS, j'ai créé un réseau virtuel et un sous-réseau. Les fichiers de déploiement sont dans le module `network`:
+```hcl
+resource "azurerm_virtual_network" "vnet" {
+  name                = var.vnet_name
+  address_space       = var.vnet_address_space
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags = var.tags
+}
+
+resource "azurerm_subnet" "aks" {
+  name                 = var.subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = var.subnet_address_prefix
+}
+```
+## Mapping des secrets Azure Key Vault avec Kubernetes
+
+```shell
+az aks enable-addons --addons azure-keyvault-secrets-provider --resource-group rg-TDeOliveira2024_cours-projet --name aks-projet-eni
+```

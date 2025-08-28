@@ -26,5 +26,24 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   }
   delegated_subnet_id    = var.mysql_subnet_id
   private_dns_zone_id     = var.mysql_private_dns_zone_id
-  tags                    = var.tags
+}
+
+resource "azurerm_mysql_flexible_server_configuration" "secure_transport" {
+  name                = "require_secure_transport"
+  resource_group_name = azurerm_mysql_flexible_server.mysql.resource_group_name
+  server_name         = azurerm_mysql_flexible_server.mysql.name
+  value               = "OFF"
+}
+
+# Création de la base de données todolist_db
+resource "azurerm_mysql_flexible_database" "todolist" {
+  name                = "todolist_db"
+  resource_group_name = var.resource_group_name
+  server_name         = azurerm_mysql_flexible_server.mysql.name
+  charset             = "utf8"
+  collation           = "utf8_general_ci"
+
+  lifecycle {
+    ignore_changes = [charset, collation]
+  }
 }

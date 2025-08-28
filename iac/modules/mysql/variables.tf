@@ -11,7 +11,7 @@ variable "location" {
 variable "mysql_server_name" {
   description = "Nom du serveur MySQL"
   type        = string
-  default     = "mysql-flexible-projet-eni"
+  default     = "mysql-projet-eni"
 }
 
 variable "mysql_admin_username" {
@@ -28,6 +28,7 @@ variable "mysql_subnet_id" {
 variable "mysql_private_dns_zone_id" {
   description = "ID de la zone DNS privée pour MySQL"
   type        = string
+  default = "mysql-private-dns-zone.mysql.database.azure.com"
 }
 
 variable "key_vault_id" {

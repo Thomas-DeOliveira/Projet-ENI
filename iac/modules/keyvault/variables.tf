@@ -11,7 +11,7 @@ variable "location" {
 variable "key_vault_name" {
   description = "Nom du Key Vault"
   type        = string
-  default     = "kv-projet-eni"
+  default     = "keyvault-projet-eni"
 }
 
 variable "tenant_id" {
@@ -28,4 +28,9 @@ variable "tags" {
   description = "Tags à appliquer aux ressources"
   type        = map(string)
   default     = {}
+}
+
+variable "aks_mi_principal_id" {
+  description = "ID Principal de l'identité gérée AKS pour les permissions du Key Vault"
+  type        = string
 }

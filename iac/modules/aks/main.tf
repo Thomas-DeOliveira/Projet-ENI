@@ -21,6 +21,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     service_cidr   = "10.0.0.0/16"
     dns_service_ip = "10.0.0.10"
   }
+}
 
-  tags = var.tags
+resource "azurerm_user_assigned_identity" "aks_mi" {
+  name                = "AKSIdentity"
+  resource_group_name = var.resource_group_name
+  location            = var.location
 }
