@@ -345,3 +345,84 @@ resource "azurerm_subnet" "aks" {
 ```shell
 az aks enable-addons --addons azure-keyvault-secrets-provider --resource-group rg-TDeOliveira2024_cours-projet --name aks-projet-eni
 ```
+
+## Déploiement de la stack Grafana Prometheus et Alertmanager avec Helm
+
+Ajouter les déôts Helm :
+
+
+A la fin du déploiement, afin de récupérer le mot de passe admin de Grafana, exécuter la commande suivante :
+
+```shell
+kubectl --namespace monitoring get secrets monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+
+graph LR
+%% Direction
+%% LR = gauche -> droite
+%% TB = haut -> bas
+%% On reste en LR pour compacité
+%% ----------------------------------------------------------------
+subgraph User[Utilisateurs]
+U1[👤 Navigateur Web]
+end
+
+subgraph Azure[Azure]
+subgraph RG[Resource Group]
+subgraph AKS[AKS - Azure Kubernetes Service]
+subgraph Ingress[Ingress NGINX]
+IGW[🌐 Ingress Controller]
+end
+
+        subgraph NSApp[Namespace: app]
+          FE[Deployment: frontend\nNginx -> Angular]
+          BE[Deployment: backend\nNode.js + Express + Sequelize]
+          SVC_FE[Service: frontend (ClusterIP)]
+          SVC_BE[Service: backend (ClusterIP)]
+          IGW -->|HTTP/HTTPS| SVC_FE
+          IGW -->|/api| SVC_BE
+          SVC_FE --> FE
+          SVC_BE --> BE
+        end
+
+        subgraph NSCSI[Namespace: csi/kv]
+          SPClass[SecretProviderClass]
+          VolMount[Volume CSI (Key Vault)]
+        end
+
+        BE -. monte .-> VolMount
+        VolMount -. fournit .-> BE
+      end
+
+      subgraph DB[AAD + Réseau + Base de Données]
+        MySQL[Azure Database for MySQL\n(Flexible Server)]
+        VNet[VNet/Subnet]
+      end
+
+      subgraph MON[Monitoring]
+        PROM[Prometheus]
+        GRAF[Grafana]
+      end
+
+      KV[(Azure Key Vault)]
+    end
+end
+
+%% Flux utilisateur
+U1 -->|HTTPS| IGW
+
+%% Connexions backend
+BE -->|TCP 3306| MySQL
+BE -. Secrets (DB pwd) .-> KV
+
+%% CSI
+KV -->|Secrets| SPClass
+
+%% Monitoring
+FE -. metrics/logs .-> PROM
+BE -. metrics/logs .-> PROM
+PROM --> GRAF
+
+%% Liaisons réseau
+AKS --- VNet
+MySQL --- VNet
