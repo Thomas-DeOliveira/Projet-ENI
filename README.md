@@ -358,21 +358,21 @@ kubectl --namespace monitoring get secrets monitoring-grafana -o jsonpath="{.dat
 ```
 ```mermaid
 graph LR
-%% Direction
-%% LR = gauche -> droite
-%% TB = haut -> bas
-%% On reste en LR pour compacité
-%% ----------------------------------------------------------------
-subgraph User[Utilisateurs]
-U1[👤 Navigateur Web]
-end
+  %% Direction
+  %% LR = gauche -> droite
+  %% TB = haut -> bas
+  %% On reste en LR pour compacité
+  %% ----------------------------------------------------------------
+  subgraph User[Utilisateurs]
+    U1[👤 Navigateur Web]
+  end
 
-subgraph Azure[Azure]
-subgraph RG[Resource Group]
-subgraph AKS[AKS - Azure Kubernetes Service]
-subgraph Ingress[Ingress NGINX]
-IGW[🌐 Ingress Controller]
-end
+  subgraph Azure[Azure]
+    subgraph RG[Resource Group]
+      subgraph AKS[AKS - Azure Kubernetes Service]
+        subgraph Ingress[Ingress NGINX]
+          IGW[🌐 Ingress Controller]
+        end
 
         subgraph NSApp[Namespace: app]
           FE[Deployment: frontend\nNginx -> Angular]
@@ -406,24 +406,24 @@ end
 
       KV[(Azure Key Vault)]
     end
-end
+  end
 
-%% Flux utilisateur
-U1 -->|HTTPS| IGW
+  %% Flux utilisateur
+  U1 -->|HTTPS| IGW
 
-%% Connexions backend
-BE -->|TCP 3306| MySQL
-BE -. Secrets (DB pwd) .-> KV
+  %% Connexions backend
+  BE -->|TCP 3306| MySQL
+  BE -. Secrets (DB pwd) .-> KV
 
-%% CSI
-KV -->|Secrets| SPClass
+  %% CSI
+  KV -->|Secrets| SPClass
 
-%% Monitoring
-FE -. metrics/logs .-> PROM
-BE -. metrics/logs .-> PROM
-PROM --> GRAF
+  %% Monitoring
+  FE -. metrics/logs .-> PROM
+  BE -. metrics/logs .-> PROM
+  PROM --> GRAF
 
-%% Liaisons réseau
-AKS --- VNet
-MySQL --- VNet
+  %% Liaisons réseau
+  AKS --- VNet
+  MySQL --- VNet
 ```
