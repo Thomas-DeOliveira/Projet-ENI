@@ -364,3 +364,4 @@ grafana:
         hosts:
           - grafana.mydomain.com
 ```
+@author Thomas De Oliveira
