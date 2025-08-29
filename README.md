@@ -348,6 +348,19 @@ Le cluster est équipé d’une **stack de supervision** :
 * **Grafana** : dashboards et alertes personnalisées
 * **Ingress sécurisé en HTTPS** avec Cert-Manager + Let’s Encrypt
 
+La stack est déployée avec les commandes suivantes :
+
+```shell
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+kubectl create namespace monitoring
+
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  -f values.yaml \
+  --namespace monitoring
+```
+
 Exemple d’extrait Helm values pour Grafana :
 
 ```yaml
