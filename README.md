@@ -300,6 +300,12 @@ Une fois AKS provisionné, les workloads applicatifs sont déployés avec des **
 * **Ingress Controller (NGINX)** pour exposer les applications en HTTPS
 * **ConfigMaps et Secrets** pour injecter la configuration et les credentials depuis Key Vault
 
+Pour installer l'addon Secrets Store CSI Driver :
+
+```shell
+az aks enable-addons --addons azure-keyvault-secrets-provider --resource-group rg-TDeOliveira2024_cours-projet --name aks-projet-eni
+```
+
 Exemple de SecretProviderClass pour MariaDB :
 
 ```yaml
