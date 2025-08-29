@@ -4,36 +4,37 @@
 
 ```bash
 Projet-ENI/
-├── backend/                     # API Node.js / Express
-│   ├── Dockerfile               # Image Docker du backend
-│   ├── scriptSQL.sql            # Script d'initialisation de la base
-│   ├── package.json             # Dépendances Node.js
-│   └── src/                     # Code source du backend
+├── backend/                          # Backend Node.js (API REST)
+│   ├── Dockerfile                   # Image Docker du backend
+│   ├── src/                         # Code source de l'API
+├── frontend/                        # Frontend Angular
+│   ├── Dockerfile                   # Image Docker du frontend
+│   └── src/                         # Code source Angular
+│       ├── app/
 │
-├── frontend/                    # Application Angular
-│   ├── Dockerfile               # Image Docker du frontend
-│   ├── angular.json             # Configuration Angular CLI
-│   ├── package.json             # Dépendances frontend
-│   └── src/                     # Code source Angular
+├── docker-compose.yaml              # Orchestration locale des services
 │
-├── iac/                         # Infrastructure as Code (Terraform)
-│   ├── aks/                     # Module Terraform pour AKS
-│   ├── network/                 # Module Terraform réseau (VNet, subnet, DNS)
-│   ├── variables.tf             # Variables globales
-│   └── main.tf                  # Point d'entrée Terraform
+├── iac/                             # Infrastructure as Code (Terraform)
+│   ├── main.tf
+│   ├── providers.tf
+│   ├── variables.tf
+│   └── modules/                     # Modules Terraform réutilisables
+│       ├── aks/
+│       ├── keyvault/
+│       ├── mysql/
+│       └── network/
 │
-├── monitoring/                  # Stack de supervision
-│   ├── prometheus/              # Configuration Prometheus
-│   └── grafana/                 # Configuration Grafana
+├── k8s/                             # Manifests Kubernetes
+│   ├── akv-secret.yaml              # Secret via Azure Key Vault
+│   ├── backend-deployment.yaml
+│   ├── frontend-deployment.yaml
+│   ├── ingress.yaml                 # Ingress général
+│   └── grafana-ingress.yaml
 │
-├── .github/
-│   └── workflows/               # Pipelines GitHub Actions CI/CD
-│       ├── backend.yml          # Workflow backend (build & push image)
-│       └── frontend.yml         # Workflow frontend (build & push image)
+├── monitoring/                      # Observabilité (Grafana, Prometheus)
+│   └── values.yaml                  # Configuration Helm
 │
-├── docker-compose.yaml          # Orchestration locale (frontend, backend, DB)
-├── .env                         # Variables d'environnement locales (backend)
-└── README.md                    # Documentation du projet
+└── README.md                        # Documentation générale du projet
 ```
 
 ## Fonctionnement de l’application
@@ -45,7 +46,7 @@ flowchart TD
     User[Utilisateur Web] --> Ingress[Ingress Controller]
     Ingress --> Frontend[Frontend Angular - Docker]
     Ingress --> Backend[Backend Node.js/Express - Docker]
-    Backend --> DB[(Azure Database for MariaDB)]
+    Backend --> DB[(Azure Database for MySQL flexible server)]
 ```
 Utilisateur Web : accède à l’application via un navigateur, en HTTPS, via l’Ingress Controller de Kubernetes.
 
@@ -53,7 +54,8 @@ Frontend Angular : fournit l’interface utilisateur et envoie des requêtes HTT
 
 Backend Node.js/Express : expose une API REST qui gère la logique métier (ex. gestion de tâches). Il utilise Sequelize pour communiquer avec la base.
 
-Base MariaDB : stocke de manière persistante les données applicatives. En local, elle est lancée en conteneur Docker ; en production, elle repose sur Azure Database for MariaDB avec un endpoint privé.
+Base MySQL : stocke de manière persistante les données applicatives. En local, elle est lancée en conteneur Docker ; en production, elle repose sur Azure Database for MySQL flexible server
+avec un endpoint privé.
 
 Cette séparation permet :
 
